@@ -70,6 +70,15 @@ function addWeeks(dateStr: string, n: number) {
   return d.toISOString().split('T')[0]
 }
 
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-1">
+      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{children}</span>
+      <div className="mt-1 h-0.5 w-8 bg-[#dc0019] rounded-full" />
+    </div>
+  )
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Backoffice() {
   const [loggedIn, setLoggedIn] = useState(false)
@@ -86,7 +95,6 @@ export default function Backoffice() {
   const [dashData, setDashData] = useState<DashboardData | null>(null)
   const [rotData, setRotData] = useState<RotationData | null>(null)
 
-  // Check auth
   useEffect(() => {
     fetch('/api/admin/check').then(r => r.json()).then(d => {
       if (d.logged_in) { setLoggedIn(true); setDisplayName(d.display_name) }
@@ -156,32 +164,54 @@ export default function Backoffice() {
   // ── Login screen ───────────────────────────────────────────────────────────
   if (!loggedIn) {
     return (
-      <div className="min-h-screen bg-stone-100 flex items-center justify-center px-4">
-        <Card className="w-full max-w-sm shadow-lg">
-          <CardHeader className="text-center space-y-2">
-            <div className="text-5xl">🔐</div>
-            <CardTitle className="text-xl">Back Office</CardTitle>
-            <p className="text-sm text-stone-500">Sistema de Agendamento RH</p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label>Usuário</Label>
-                <Input value={username} onChange={e => setUsername(e.target.value)} placeholder="rh / massagem" autoComplete="username" />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Senha</Label>
-                <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••" autoComplete="current-password" />
-              </div>
-              <Button type="submit" className="w-full bg-[#6b4c35] hover:bg-[#5a3e2b]" disabled={loginLoading}>
-                {loginLoading ? 'Entrando...' : 'Entrar'}
-              </Button>
-            </form>
-            <div className="mt-4 text-center">
-              <a href="/" className="text-xs text-stone-400 hover:text-stone-600 transition-colors">← Voltar ao agendamento</a>
+      <div className="relative min-h-screen bg-[#04003d] flex flex-col items-center justify-center px-6 py-16">
+        {/* Background blobs */}
+        <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+          <svg preserveAspectRatio="xMidYMid slice" viewBox="10 10 80 80" className="absolute inset-0 w-full h-full">
+            <path fill="#07005c" fillOpacity="0.22" d="M37-5C25.1-14.7,5.7-19.1-9.2-10-28.5,1.8-32.7,31.1-19.8,49c15.5,21.5,52.6,22,67.2,2.3C59.4,35,53.7,8.5,37-5Z"/>
+            <path fill="#0d00a3" fillOpacity="0.18" d="M20.6,4.1C11.6,1.5-1.9,2.5-8,11.2-16.3,23.1-8.2,45.6,7.4,50S42.1,38.9,41,24.5C40.2,14.1,29.4,6.6,20.6,4.1Z"/>
+            <path fill="#1e14e0" fillOpacity="0.16" d="M105.9,48.6c-12.4-8.2-29.3-4.8-39.4.8-23.4,12.8-37.7,51.9-19.1,74.1s63.9,15.3,76-5.6c7.6-13.3,1.8-31.1-2.3-43.8C117.6,63.3,114.7,54.3,105.9,48.6Z"/>
+            <path fill="#4d40e8" fillOpacity="0.14" d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"/>
+          </svg>
+        </div>
+
+        {/* Logo above card */}
+        <div className="relative z-10 mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/saude-bem-estar-full.svg" alt="Saúde e Bem Estar" className="h-12 w-auto drop-shadow-lg" />
+        </div>
+
+        {/* Card */}
+        <div className="relative z-10 w-full max-w-sm bg-white rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.50)] overflow-hidden">
+          <div className="px-8 pt-8 pb-6 space-y-1 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#888]">Back Office</p>
+            <div className="mt-1 h-[2px] w-6 bg-[#dc0019] rounded-full mx-auto" />
+            <p className="text-sm text-neutral-400 pt-1">Sistema de Agendamento RH</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="px-8 pb-8 space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-neutral-400">Usuário</Label>
+              <Input value={username} onChange={e => setUsername(e.target.value)}
+                placeholder="rh / massagem" autoComplete="username" autoFocus
+                className="h-10 text-sm border-neutral-200 focus-visible:ring-[#04003d]/20 focus-visible:border-[#04003d]" />
             </div>
-          </CardContent>
-        </Card>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-neutral-400">Senha</Label>
+              <Input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="••••••" autoComplete="current-password"
+                className="h-10 text-sm border-neutral-200 focus-visible:ring-[#04003d]/20 focus-visible:border-[#04003d]" />
+            </div>
+            <Button type="submit" className="w-full h-10 text-sm font-bold tracking-wide bg-[#04003d] hover:bg-[#04003d]/90" disabled={loginLoading}>
+              {loginLoading ? 'Entrando…' : 'Entrar'}
+            </Button>
+            <div className="text-center pt-1">
+              <a href="/" className="text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
+                ← Voltar ao agendamento
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
     )
   }
@@ -194,30 +224,45 @@ export default function Backoffice() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100">
-      {/* Header */}
-      <header className="bg-[#6b4c35] text-white shadow-md">
+    <div className="min-h-screen bg-[#f4f5f7]">
+
+      {/* ── Header ──────────────────────────────────────────────────────────── */}
+      <header className="bg-primary text-primary-foreground shadow-[0_4px_12px_rgba(4,0,61,0.18)]">
+        <div className="h-1 bg-[#dc0019]" />
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
-          <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg">💆</div>
-          <div>
-            <h1 className="font-bold text-base leading-tight">Back Office · Massagem RH</h1>
-            <p className="text-xs opacity-75">{displayName}</p>
+          {/* Logo mark */}
+          <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="1.2" strokeOpacity="0.4" />
+              <path d="M10 4 C10 4 14 7 14 10 C14 13 10 16 10 16 C10 16 6 13 6 10 C6 7 10 4 10 4Z"
+                fill="white" fillOpacity="0.75" />
+            </svg>
           </div>
-          <nav className="ml-auto flex gap-2 flex-wrap">
+          <div>
+            <h1 className="font-black text-base leading-tight tracking-tight">Back Office · Massagem RH</h1>
+            <p className="text-[11px] text-white/50 tracking-wide">{displayName}</p>
+          </div>
+
+          <nav className="ml-auto flex gap-2 flex-wrap items-center">
             {(['sessions', 'rotation', 'dashboard'] as const).map(p => (
               <button key={p} onClick={() => setPage(p)}
                 className={`px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all
-                  ${page === p ? 'bg-white/20 border-white' : 'border-white/30 hover:bg-white/10'}`}>
+                  ${page === p
+                    ? 'bg-white/20 border-white text-white'
+                    : 'border-white/25 text-white/70 hover:bg-white/10 hover:text-white'}`}>
                 {p === 'sessions' ? 'Sessões' : p === 'rotation' ? 'Rodízio' : 'Dashboard'}
               </button>
             ))}
             <button onClick={handleLogout}
-              className="px-4 py-1.5 rounded-full text-sm font-semibold border-2 border-red-300/50 text-red-200 hover:bg-red-500/20 transition-all">
+              className="px-4 py-1.5 rounded-full text-sm font-semibold border-2 border-[#dc0019]/60 text-[#ff8090] hover:bg-[#dc0019]/20 transition-all">
               Sair
             </button>
+            <a href="/" className="text-[11px] text-white/40 hover:text-white/80 transition-colors ml-1">
+              ← Agendamento
+            </a>
           </nav>
-          <a href="/" className="text-xs text-white/50 hover:text-white transition-colors ml-2">← Agendamento</a>
         </div>
+        <div className="h-0.5 bg-[#dc0019]/30" />
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
@@ -226,26 +271,34 @@ export default function Backoffice() {
         {page === 'sessions' && (
           <>
             <div className="flex items-center gap-3 flex-wrap">
-              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o - 1)}>← Ant.</Button>
-              <span className="font-semibold text-stone-700">{currentDate ? formatDate(currentDate) : '...'}</span>
-              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o + 1)}>Próx. →</Button>
+              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o - 1)}
+                className="border-neutral-200 hover:bg-primary hover:text-primary-foreground hover:border-primary">
+                ← Ant.
+              </Button>
+              <span className="font-semibold text-foreground">{currentDate ? formatDate(currentDate) : '…'}</span>
+              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o + 1)}
+                className="border-neutral-200 hover:bg-primary hover:text-primary-foreground hover:border-primary">
+                Próx. →
+              </Button>
               <Badge variant="secondary" className="ml-auto">{sessions.length} sessão(ões)</Badge>
             </div>
 
             {Object.keys(grouped).sort().map(slot => (
-              <Card key={slot}>
+              <Card key={slot} className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm text-[#6b4c35] uppercase tracking-wide">{slot} — {grouped[slot].length} pessoa(s)</CardTitle>
+                  <SectionTitle>{slot} — {grouped[slot].length} pessoa(s)</SectionTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {grouped[slot].map(s => (
-                    <div key={s.id} className="rounded-xl border border-stone-200 p-4 bg-white space-y-3">
+                    <div key={s.id} className="rounded-xl border border-neutral-200 p-4 bg-white space-y-3 shadow-[0_1px_2px_rgba(4,0,61,0.06)]">
                       <div className="flex items-start justify-between gap-3 flex-wrap">
                         <div>
-                          <p className="font-semibold text-stone-800">{s.name}</p>
-                          <p className="text-xs text-stone-400">{s.identifier}</p>
+                          <p className="font-semibold text-foreground">{s.name}</p>
+                          <p className="text-xs text-muted-foreground">{s.identifier}</p>
                           {s.stars && (
-                            <p className="text-xs text-amber-600 mt-1">⭐ {s.stars}/5{s.eval_comment ? ` · "${s.eval_comment}"` : ''}</p>
+                            <p className="text-xs text-amber-600 mt-1">
+                              ⭐ {s.stars}/5{s.eval_comment ? ` · "${s.eval_comment}"` : ''}
+                            </p>
                           )}
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
@@ -256,7 +309,7 @@ export default function Backoffice() {
                       <Separator />
                       <div className="flex gap-2 flex-wrap items-center">
                         <Select defaultValue={s.status} onValueChange={v => updateStatus(s.id, v)}>
-                          <SelectTrigger className="w-36 h-8 text-sm">
+                          <SelectTrigger className="w-36 h-8 text-sm border-neutral-200">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -266,7 +319,8 @@ export default function Backoffice() {
                           </SelectContent>
                         </Select>
                         {emailEnabled && s.identifier.includes('@') && !s.reminder_sent && s.status === 'pending' && (
-                          <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => sendReminder(s.id)}>
+                          <Button size="sm" variant="outline" className="h-8 text-xs border-neutral-200"
+                            onClick={() => sendReminder(s.id)}>
                             ✉ Enviar lembrete
                           </Button>
                         )}
@@ -278,7 +332,11 @@ export default function Backoffice() {
             ))}
 
             {sessions.length === 0 && (
-              <Card><CardContent className="py-12 text-center text-stone-400">Nenhuma sessão agendada para esta data.</CardContent></Card>
+              <Card className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
+                <CardContent className="py-12 text-center text-muted-foreground">
+                  Nenhuma sessão agendada para esta data.
+                </CardContent>
+              </Card>
             )}
           </>
         )}
@@ -287,35 +345,47 @@ export default function Backoffice() {
         {page === 'rotation' && rotData && (
           <>
             <div className="flex items-center gap-3 flex-wrap">
-              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o - 1)}>← Ant.</Button>
-              <span className="font-semibold text-stone-700">{currentDate ? formatDate(currentDate) : '...'}</span>
-              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o + 1)}>Próx. →</Button>
+              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o - 1)}
+                className="border-neutral-200 hover:bg-primary hover:text-primary-foreground hover:border-primary">
+                ← Ant.
+              </Button>
+              <span className="font-semibold text-foreground">{currentDate ? formatDate(currentDate) : '…'}</span>
+              <Button size="sm" variant="outline" onClick={() => setDateOffset(o => o + 1)}
+                className="border-neutral-200 hover:bg-primary hover:text-primary-foreground hover:border-primary">
+                Próx. →
+              </Button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'Vagas total', value: rotData.total_slots, color: 'text-stone-700' },
-                { label: 'Agendadas', value: rotData.booked_this_week, color: 'text-blue-600' },
-                { label: 'Disponíveis', value: rotData.available, color: 'text-green-600' },
-                { label: 'Grupo B (semana passada)', value: rotData.group_b_count, color: 'text-amber-600' },
+                { label: 'Vagas total', value: rotData.total_slots, color: 'text-foreground' },
+                { label: 'Agendadas', value: rotData.booked_this_week, color: 'text-primary' },
+                { label: 'Disponíveis', value: rotData.available, color: 'text-[#1a7a3a]' },
+                { label: 'Grupo B (sem. passada)', value: rotData.group_b_count, color: 'text-amber-600' },
               ].map(item => (
-                <Card key={item.label}>
+                <Card key={item.label} className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
                   <CardContent className="pt-5 pb-4 text-center">
-                    <p className={`text-3xl font-bold ${item.color}`}>{item.value}</p>
-                    <p className="text-xs text-stone-500 mt-1">{item.label}</p>
+                    <p className={`text-3xl font-black ${item.color}`}>{item.value}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{item.label}</p>
                   </CardContent>
                 </Card>
               ))}
             </div>
-            <Card>
-              <CardHeader><CardTitle className="text-sm text-[#6b4c35] uppercase tracking-wide">Janelas de abertura</CardTitle></CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between items-center py-2 border-b border-stone-100">
-                  <span className="text-sm text-stone-600">Grupo A (prioridade) — Segunda-feira</span>
-                  <Badge variant="outline">{new Date(rotData.window_group_a).toLocaleString('pt-BR', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</Badge>
+            <Card className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
+              <CardHeader className="pb-4">
+                <SectionTitle>Janelas de abertura</SectionTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 pt-0">
+                <div className="flex justify-between items-center py-2 border-b border-neutral-100">
+                  <span className="text-sm text-muted-foreground">Grupo A (prioridade) — Segunda-feira</span>
+                  <Badge variant="outline">
+                    {new Date(rotData.window_group_a).toLocaleString('pt-BR', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </Badge>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-stone-600">Grupo B (repescagem) — Terça-feira</span>
-                  <Badge variant="secondary">{new Date(rotData.window_group_b).toLocaleString('pt-BR', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</Badge>
+                  <span className="text-sm text-muted-foreground">Grupo B (repescagem) — Terça-feira</span>
+                  <Badge variant="secondary">
+                    {new Date(rotData.window_group_b).toLocaleString('pt-BR', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -328,16 +398,16 @@ export default function Backoffice() {
             {/* KPIs */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'IBE Atual', value: dashData.current_ibe.toFixed(1), color: 'text-blue-600', desc: 'Índice de Bem-Estar' },
-                { label: 'Total sessões', value: dashData.totals.total, color: 'text-stone-700', desc: 'Histórico geral' },
+                { label: 'IBE Atual', value: dashData.current_ibe.toFixed(1), color: 'text-primary', desc: 'Índice de Bem-Estar' },
+                { label: 'Total sessões', value: dashData.totals.total, color: 'text-foreground', desc: 'Histórico geral' },
                 { label: 'Média avaliações', value: dashData.totals.global_avg_stars.toFixed(1) + ' ⭐', color: 'text-amber-600', desc: 'Todas as sessões' },
-                { label: 'Delta energia', value: '+' + dashData.totals.global_delta.toFixed(1), color: 'text-green-600', desc: 'Antes → Depois' },
+                { label: 'Delta energia', value: '+' + dashData.totals.global_delta.toFixed(1), color: 'text-[#1a7a3a]', desc: 'Antes → Depois' },
               ].map(k => (
-                <Card key={k.label}>
+                <Card key={k.label} className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
                   <CardContent className="pt-5 pb-4 text-center">
-                    <p className={`text-2xl font-bold ${k.color}`}>{k.value}</p>
-                    <p className="text-xs font-semibold text-stone-600 mt-0.5">{k.label}</p>
-                    <p className="text-xs text-stone-400">{k.desc}</p>
+                    <p className={`text-2xl font-black ${k.color}`}>{k.value}</p>
+                    <p className="text-xs font-semibold text-foreground mt-0.5">{k.label}</p>
+                    <p className="text-xs text-muted-foreground">{k.desc}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -347,9 +417,15 @@ export default function Backoffice() {
             {dashData.insights.length > 0 && (
               <div className="space-y-2">
                 {dashData.insights.map((ins, i) => (
-                  <Alert key={i} className={ins.type === 'alert' ? 'border-red-200 bg-red-50' : ins.type === 'positive' ? 'border-green-200 bg-green-50' : 'border-stone-200'}>
+                  <Alert key={i}
+                    className={ins.type === 'alert'
+                      ? 'border-[#dc0019]/20 bg-[#fff0f2]'
+                      : ins.type === 'positive'
+                        ? 'border-[#1a7a3a]/20 bg-[#e8f5ed]'
+                        : 'border-neutral-200'}>
                     <AlertDescription className="flex items-center gap-2">
-                      <span>{ins.icon}</span><span className="text-sm">{ins.text}</span>
+                      <span>{ins.icon}</span>
+                      <span className="text-sm">{ins.text}</span>
                     </AlertDescription>
                   </Alert>
                 ))}
@@ -357,79 +433,88 @@ export default function Backoffice() {
             )}
 
             {/* Chart IBE */}
-            <Card>
-              <CardHeader><CardTitle className="text-sm text-[#6b4c35] uppercase tracking-wide">IBE semanal</CardTitle></CardHeader>
-              <CardContent>
+            <Card className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
+              <CardHeader className="pb-4">
+                <SectionTitle>IBE semanal</SectionTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
                 <ResponsiveContainer width="100%" height={200}>
                   <LineChart data={dashData.weekly_data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                     <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
                     <Tooltip />
-                    <Line type="monotone" dataKey="ibe" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} name="IBE" />
+                    <Line type="monotone" dataKey="ibe" stroke="#04003d" strokeWidth={2.5}
+                      dot={{ r: 3, fill: '#04003d' }} name="IBE" />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
             {/* Chart attendance */}
-            <Card>
-              <CardHeader><CardTitle className="text-sm text-[#6b4c35] uppercase tracking-wide">Sessões por semana</CardTitle></CardHeader>
-              <CardContent>
+            <Card className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
+              <CardHeader className="pb-4">
+                <SectionTitle>Sessões por semana</SectionTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={dashData.weekly_data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="completed" fill="#4a7c5a" name="Concluídas" radius={[3, 3, 0, 0]} />
-                    <Bar dataKey="no_show" fill="#c0392b" name="Faltas" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="completed" fill="#1a7a3a" name="Concluídas" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="no_show" fill="#dc0019" name="Faltas" radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
             {/* Slot popularity */}
-            <Card>
-              <CardHeader><CardTitle className="text-sm text-[#6b4c35] uppercase tracking-wide">Horários mais procurados</CardTitle></CardHeader>
-              <CardContent>
+            <Card className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
+              <CardHeader className="pb-4">
+                <SectionTitle>Horários mais procurados</SectionTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
                 <ResponsiveContainer width="100%" height={160}>
                   <BarChart data={dashData.slot_popularity} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis type="number" tick={{ fontSize: 11 }} />
                     <YAxis dataKey="time" type="category" width={48} tick={{ fontSize: 11 }} />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#7a9e87" name="Agendamentos" radius={[0, 3, 3, 0]} />
+                    <Bar dataKey="count" fill="#04003d" name="Agendamentos" radius={[0, 3, 3, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
             {/* Employees table */}
-            <Card>
-              <CardHeader><CardTitle className="text-sm text-[#6b4c35] uppercase tracking-wide">Colaboradores (anonimizados)</CardTitle></CardHeader>
-              <CardContent>
+            <Card className="shadow-[0_2px_4px_rgba(4,0,61,0.08)] border-neutral-200">
+              <CardHeader className="pb-4">
+                <SectionTitle>Colaboradores (anonimizados)</SectionTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Colaborador</TableHead>
-                      <TableHead className="text-right">Sessões</TableHead>
-                      <TableHead className="text-right">Concluídas</TableHead>
-                      <TableHead className="text-right">Faltas</TableHead>
-                      <TableHead className="text-right">Presença</TableHead>
-                      <TableHead className="text-right">⭐ Média</TableHead>
+                    <TableRow className="border-neutral-200">
+                      <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Colaborador</TableHead>
+                      <TableHead className="text-right text-xs uppercase tracking-wide text-muted-foreground">Sessões</TableHead>
+                      <TableHead className="text-right text-xs uppercase tracking-wide text-muted-foreground">Concluídas</TableHead>
+                      <TableHead className="text-right text-xs uppercase tracking-wide text-muted-foreground">Faltas</TableHead>
+                      <TableHead className="text-right text-xs uppercase tracking-wide text-muted-foreground">Presença</TableHead>
+                      <TableHead className="text-right text-xs uppercase tracking-wide text-muted-foreground">⭐ Média</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {dashData.employees.map(emp => (
-                      <TableRow key={emp.display_name}>
-                        <TableCell className="font-medium">{emp.display_name}</TableCell>
-                        <TableCell className="text-right">{emp.sessions}</TableCell>
-                        <TableCell className="text-right text-green-700">{emp.completed}</TableCell>
-                        <TableCell className="text-right text-red-600">{emp.no_shows}</TableCell>
-                        <TableCell className="text-right">{(emp.attend_rate * 100).toFixed(0)}%</TableCell>
-                        <TableCell className="text-right">{emp.avg_stars ?? '—'}</TableCell>
+                      <TableRow key={emp.display_name} className="border-neutral-100">
+                        <TableCell className="font-semibold text-foreground">{emp.display_name}</TableCell>
+                        <TableCell className="text-right text-foreground">{emp.sessions}</TableCell>
+                        <TableCell className="text-right text-[#1a7a3a] font-medium">{emp.completed}</TableCell>
+                        <TableCell className="text-right text-[#dc0019] font-medium">{emp.no_shows}</TableCell>
+                        <TableCell className="text-right text-foreground">{(emp.attend_rate * 100).toFixed(0)}%</TableCell>
+                        <TableCell className="text-right text-foreground">{emp.avg_stars ?? '—'}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
