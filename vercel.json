@@ -2,7 +2,13 @@
   "crons": [
     {
       "path": "/api/cron",
-      "schedule": "* * * * *"
+      "schedule": "0 13 * * 3"
     }
-  ]
+  ],
+  "experimentalServices": {
+    "web": {
+      "routePrefix": "/",
+      "framework": "nextjs"
+    }
+  }
 }
